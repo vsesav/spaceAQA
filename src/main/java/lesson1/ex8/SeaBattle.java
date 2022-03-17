@@ -11,19 +11,19 @@ public class SeaBattle {
     public SeaBattle() {
         initialization(ground);
 
-        randomShipCreating(4);
+        randomShipOfAGivenSize(4);
 
-        randomShipCreating(3);
-        randomShipCreating(3);
+        randomShipOfAGivenSize(3);
+        randomShipOfAGivenSize(3);
 
-        randomShipCreating(2);
-        randomShipCreating(2);
-        randomShipCreating(2);
+        randomShipOfAGivenSize(2);
+        randomShipOfAGivenSize(2);
+        randomShipOfAGivenSize(2);
 
-        randomShipCreating(1);
-        randomShipCreating(1);
-        randomShipCreating(1);
-        randomShipCreating(1);
+        randomShipOfAGivenSize(1);
+        randomShipOfAGivenSize(1);
+        randomShipOfAGivenSize(1);
+        randomShipOfAGivenSize(1);
 
     }
 
@@ -52,91 +52,64 @@ public class SeaBattle {
         }
     }
 
-    // Рандомное добавление горизонтально расположенного коробля заданного размера
-    private void horizontal(int shipSize) {
+    // Рандомное добавление коробля заданного размера
+    private void randomShipOfAGivenSize(int shipSize) {
+        boolean direction = random.nextBoolean();
+
         int x = random.nextInt(11 - shipSize);
         int y = random.nextInt(11 - shipSize);
 
-        while (!horizontalVerification(x, y, shipSize)) {
+        while (!verification(x, y, shipSize, direction)) {
             x = random.nextInt(11 - shipSize);
             y = random.nextInt(11 - shipSize);
         }
-        for (int shipX = x; shipX < x + shipSize; shipX++) {
-            ground[y][shipX] = ONE_DECK_OF_THE_SHIP;
-        }
-    }
 
-
-    // Рандомное добавление вертикально расположенного коробля заданного размера
-    private void vertical(int shipSize) {
-        int x = random.nextInt(11 - shipSize);
-        int y = random.nextInt(11 - shipSize);
-
-        while (!verticalVerification(x, y, shipSize)) {
-            x = random.nextInt(11 - shipSize);
-            y = random.nextInt(11 - shipSize);
-        }
-        for (int shipY = y; shipY < y + shipSize; shipY++) {
-            ground[shipY][x] = ONE_DECK_OF_THE_SHIP;
-        }
-
-    }
-
-
-    // Проверка возможности размещения вертикального корабля с заданными координатами и размером
-    private boolean verticalVerification(int x, int y, int shipSize) {
-        for (int shipY = y - 1; shipY < y + shipSize + 1; shipY++) {
-            if (shipY < 0) {
-                continue;
+        if (direction) {
+            for (int shipY = y; shipY < y + shipSize; shipY++) {
+                ground[shipY][x] = ONE_DECK_OF_THE_SHIP;
             }
-            if (shipY > 9) {
-                break;
-            }
-
-            if ((x != 0 && checkContainShipDeck(shipY, x - 1))
-                    || checkContainShipDeck(shipY, x)
-                    || ((x < 9) && checkContainShipDeck(shipY, x + 1))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    // Проверка возможности размещения горизонтального корабля с заданными координатами и размером
-    private boolean horizontalVerification(int x, int y, int shipSize) {
-        for (int shipX = x - 1; shipX < x + shipSize + 1; shipX++) {
-
-            if (shipX < 0) {
-                continue;
-            }
-            if (shipX > 9) {
-                break;
-            }
-
-            if ((y != 0 && checkContainShipDeck(y - 1, shipX))
-                    || checkContainShipDeck(y, shipX)
-                    || ((y < 9) && checkContainShipDeck(y + 1, shipX))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Создает корабль рандомного направления заданного размера
-    private void randomShipCreating(int shipSize) {
-
-        if (random.nextBoolean()) {
-            vertical(shipSize);
         } else {
-            horizontal(shipSize);
+            for (int shipX = x; shipX < x + shipSize; shipX++) {
+                ground[y][shipX] = ONE_DECK_OF_THE_SHIP;
+            }
         }
+    }
+
+    // Проверка возможности размещения корабля с заданными координатами и размером с учетом направления
+    private boolean verification(int x, int y, int shipSize, boolean isItVertical) {
+        int coordinate;
+        int notBiggerThan;
+        int a;
+        if (isItVertical){
+            coordinate = y - 1;
+            notBiggerThan = y + shipSize + 1;
+            a = x;
+        } else {
+            coordinate = x - 1;
+            notBiggerThan = x + shipSize + 1;
+            a = y;
+        }
+
+        for (int ship = coordinate; ship < notBiggerThan; ship++) {
+            if (ship < 0 || ship > 9) {
+                continue;
+            }
+            if ((a != 0 && checkContainShipDeck(ship, a - 1, isItVertical))
+                    || checkContainShipDeck(ship, a, isItVertical)
+                    || ((a < 9) && checkContainShipDeck(ship, a + 1, isItVertical))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     //Проверка наличия палубы коробля в заданной координате
-    private boolean checkContainShipDeck(int y, int x) {
-
-        return ground[y][x].equals(ONE_DECK_OF_THE_SHIP);
+    private boolean checkContainShipDeck(int y, int x, boolean isItVertical) {
+        if (isItVertical) {
+            return ground[y][x].equals(ONE_DECK_OF_THE_SHIP);
+        } else {
+            return ground[x][y].equals(ONE_DECK_OF_THE_SHIP);
+        }
 
     }
 
