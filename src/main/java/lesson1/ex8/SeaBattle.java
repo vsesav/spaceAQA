@@ -32,7 +32,7 @@ public class SeaBattle {
     // Создание поля морского боя
     private void initialization(String[][] array) {
         try {
-            for (int y = 0; y < array[0].length; y++) {
+            for (int y = 0; y < array.length; y++) {
 
                 for (int x = 0; x < array[0].length; x++) {
 
@@ -50,9 +50,9 @@ public class SeaBattle {
     public void printGround() {
         for (String[] strings : ground) {
 
-            for (int i = 0; i < ground[0].length; i++) {
+            for (String cell: strings) {
 
-                System.out.print(strings[i]);
+                System.out.print(cell);
             }
 
             System.out.println();
@@ -81,25 +81,25 @@ public class SeaBattle {
 
     // Проверка возможности размещения корабля с заданными координатами и размером с учетом направления
     private boolean verification(int x, int y, int shipSize, boolean isItVertical) {
-        int coordinate;
-        int notBiggerThan;
-        int a;
+        int startCoordinate;
+        int endCoordinate;
+        int staticCoordinate;
         if (isItVertical) {
-            coordinate = y - 1;
-            notBiggerThan = y + shipSize + 1;
-            a = x;
+            startCoordinate = y - 1;
+            endCoordinate = y + shipSize + 1;
+            staticCoordinate = x;
         } else {
-            coordinate = x - 1;
-            notBiggerThan = x + shipSize + 1;
-            a = y;
+            startCoordinate = x - 1;
+            endCoordinate = x + shipSize + 1;
+            staticCoordinate = y;
         }
 
-        for (int ship = coordinate; ship < notBiggerThan; ship++) {
-            if (ship < 0 || ship > 9) {
-                continue;
-            }
+        for (int dynamicCoordinate = startCoordinate; dynamicCoordinate < endCoordinate; dynamicCoordinate++) {
+
             for (int i = -1; i <= 1; i++) {
-                if (checkContainShipDeck(ship, a + i, isItVertical)) {
+                if (isItVertical && checkContainShipDeck(dynamicCoordinate, staticCoordinate + i)) {
+                    return false;
+                } else if (!isItVertical && checkContainShipDeck(staticCoordinate + i, dynamicCoordinate)) {
                     return false;
                 }
             }
@@ -108,13 +108,9 @@ public class SeaBattle {
     }
 
     //Проверка наличия палубы коробля в заданной координате
-    private boolean checkContainShipDeck(int y, int x, boolean isItVertical) {
+    private boolean checkContainShipDeck(int y, int x) {
         try {
-            if (isItVertical) {
-                return ground[y][x].contains(ONE_DECK_OF_THE_SHIP);
-            } else {
-                return ground[x][y].contains(ONE_DECK_OF_THE_SHIP);
-            }
+            return ground[y][x].contains(ONE_DECK_OF_THE_SHIP);
         } catch (Exception indexOutOfBounds) {
             return false;
         }
