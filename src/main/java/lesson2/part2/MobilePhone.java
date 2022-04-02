@@ -9,7 +9,6 @@ public class MobilePhone extends Phone {
     private int memoryOfTheMemoryCard;
     private HashMap<String, Long> phoneBook = new HashMap<>();
 
-
     public MobilePhone(Brand brand, int memory, boolean memoryCard) {
         super(brand);
         this.memory = memory;
